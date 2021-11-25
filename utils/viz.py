@@ -15,11 +15,11 @@ def visualize_gradcam(raw_image, processed_img, model, layer_name):
     activation_map = cam_extractor(out.squeeze(0).argmax().item(), out)
     result = overlay_mask(
         to_pil_image(raw_image), 
-        to_pil_image(activation_map, mode='F'), 
+        to_pil_image(activation_map[0], mode='F'), 
         alpha=0.5
     )
     
-    return raw_image.permute(1, 2, 0).cpu(), activation_map.cpu().numpy(), result
+    return raw_image.permute(1, 2, 0).cpu(), activation_map[0].cpu().numpy(), result
 
     
 def plot_probabilites(pred, actual_class, pred_class, class_names):
