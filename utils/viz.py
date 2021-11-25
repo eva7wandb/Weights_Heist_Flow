@@ -56,3 +56,15 @@ def visualize_sample(trainer, sample, cam_layer_name='layer4'):
     prob_bar[actual_class].set_color('g')
     plt.xticks(range(10), [x.upper() for x in class_names], rotation=90)
     plt.title('score')
+
+def visualize_loss(logs):
+    loss_train = [x['train_loss'] for x in logs]
+    loss_val = [x['test_loss'] for x in logs]
+    epochs = range(1,len(logs)+1)
+    plt.plot(epochs, loss_train, 'g', label='Training loss')
+    plt.plot(epochs, loss_val, 'b', label='Testing loss')
+    plt.title('Training and Testing loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()

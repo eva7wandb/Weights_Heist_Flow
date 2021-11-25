@@ -43,7 +43,8 @@ class Trainer:
             self.net.parameters(), lr=self.lr,
             momentum=0.9, weight_decay=5e-4
         )
-        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
+        # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min')
         self.logs = []
         
         self.model_path = model_path
@@ -72,7 +73,7 @@ class Trainer:
                 self.net, device,
                 self.test_loader, self.criterion, epoch,
             )
-            self.scheduler.step()
+            self.scheduler.step(test_loss)
             
             ## logging
             log_temp = {
@@ -105,3 +106,8 @@ def show_misclassification(trainer, cam_layer_name='layer4'):
     for class_, samples in sample_preds['mistakes'].items():
         for sample in samples[:2]:
             visualize_sample(trainer, sample, cam_layer_name)
+
+def show_loss_curves(logs):
+    from utils.viz import visualize_loss
+
+    visualize_loss(logs)
