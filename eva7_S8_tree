@@ -1,0 +1,16 @@
+.
+├── eva7S8_tree
+├── main.py
+├── models
+│   ├── resnet_layerNorm.py
+│   └── resnet.py
+├── README.md
+├── S8_resnetLayerNorm.ipynb
+└── utils
+    ├── data.py
+    ├── setup.py
+    ├── testing.py
+    ├── training.py
+    └── viz.py
+
+2 directories, 11 files
