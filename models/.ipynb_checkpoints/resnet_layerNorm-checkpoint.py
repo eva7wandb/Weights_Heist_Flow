@@ -9,78 +9,99 @@ Reference:
 '''
 
 import torch
+
 import torch.nn as nn
+
 import torch.nn.functional as F
 
 
+
+
+
 class BasicBlock(nn.Module):
-    
-    '''
-    BasicBlock is a building template for residual network. It comprises of two residual network
-    blocks each containing two convolution layers and a residual connection, so in total encompasses
-    four convolutional layers and two residual connections. In fact, per definition, residual term
-    applicable to these convolutional layers, and hence two original or as-is connections, and two
-    pairs of residual connections via convolution layers.
-    '''
-    
+
     expansion = 1
-    
+
+
+
     def __init__(self, in_planes, planes, stride=1, batch_norm=True, layer_norm=False):
 
         super(BasicBlock, self).__init__()
-        
+
         self.batch_norm = batch_norm
+
         self.layer_norm = layer_norm
 
         self.conv1 = nn.Conv2d(
-        	in_planes, planes, kernel_size=3,
-        	stride=stride, padding=1, bias=False
-        	)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.ln1 = nn.GroupNorm(1, planes)
+
+            in_planes, planes, kernel_size=3, 
+
+            stride=stride, padding=1, bias=False
+
+        )
+        if batch_norm:
+            self.bn1 = nn.BatchNorm2d(planes)
+        if layer_norm:
+            self.ln1 = nn.GroupNorm(1, planes)
 
         self.conv2 = nn.Conv2d(
-        	planes, planes, kernel_size=3,
-        	stride=1, padding=1, bias=False
-        	)
-        
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.ln2 = nn.GroupNorm(1, planes)
+
+            planes, planes, kernel_size=3,
+
+            stride=1, padding=1, bias=False
+
+        )
+        if batch_norm:
+            self.bn2 = nn.BatchNorm2d(planes)
+        if layer_norm:
+            self.ln2 = nn.GroupNorm(1, planes)
 
 
         self.shortcut = nn.Sequential()
 
         if stride != 1 or in_planes != self.expansion*planes:
-            
+
             if self.batch_norm:
-                self.shortcut = nn.Sequential(
-                    nn.Conv2d(
-                        in_planes, self.expansion*planes,
-                        kernel_size=1, stride=stride, bias=False
-                        ),
-                    nn.BatchNorm2d(self.expansion*planes),
-                    )
-            
+              self.shortcut = nn.Sequential(
+
+                nn.Conv2d(
+
+                    in_planes, self.expansion*planes,
+
+                    kernel_size=1, stride=stride, bias=False
+
+                ),
+                nn.BatchNorm2d(self.expansion*planes),
+              )
             if self.layer_norm:
-                self.shortcut = nn.Sequential(
-                    nn.Conv2d(
-                        in_planes, self.expansion*planes,
-                        kernel_size=1, stride=stride, bias=False
-                    ),
-                    nn.GroupNorm(1, self.expansion*planes),
-                    )
+              self.shortcut = nn.Sequential(
+
+                nn.Conv2d(
+
+                    in_planes, self.expansion*planes,
+
+                    kernel_size=1, stride=stride, bias=False
+
+                ),
+                nn.GroupNorm(1, self.expansion*planes),
+              )
 
     def forward(self, x):
-        
+
         if self.batch_norm:
+
             out = F.relu(self.bn1(self.conv1(x)))
+
             out = self.bn2(self.conv2(out))
 
         elif self.layer_norm:
+
             out = F.relu(self.ln1(self.conv1(x)))
+
             out = self.ln2(self.conv2(out))
 
         out += self.shortcut(x)
+
         out = F.relu(out)
 
         return out
@@ -91,34 +112,35 @@ class BasicBlock(nn.Module):
 
 class ResNet(nn.Module):
 
-    '''
-    	ResNet is the final Residual Network architecture. This defines the model representation
-    	using the building block or template block "BasicBlock" introduced earlier. This itself
-    	acts as a template design for ResNet18 or ResNet34 architectures by aptly changing the
-    	number of blocks e.g., [2, 2, 2, 2] represents ResNet18, and [3, 4, 6, 3] represents the
-    	ResNet34.
-    '''
-
     def __init__(self, block, num_blocks, num_classes=10, batch_norm=True, layer_norm=False):
 
         super(ResNet, self).__init__()
+
         self.in_planes = 64
 
         self.batch_norm = batch_norm
+
         self.layer_norm = layer_norm
 
 
         self.conv1 = nn.Conv2d(
+
             3, 64, kernel_size=3,
+
             stride=1, padding=1, bias=False
-            )
-            
-        self.bn1 = nn.BatchNorm2d(64)
-        self.ln1 = nn.GroupNorm(1, 64)
+
+        )
+        if batch_norm:
+            self.bn1 = nn.BatchNorm2d(64)
+        if layer_norm:
+            self.ln1 = nn.GroupNorm(1, 64)
 
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
+
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
+
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
+
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
 
         self.linear = nn.Linear(512*block.expansion, num_classes)
@@ -126,13 +148,15 @@ class ResNet(nn.Module):
 
 
     def _make_layer(self, block, planes, num_blocks, stride):
+
         strides = [stride] + [1]*(num_blocks-1)
+
         layers = []
+
         for stride in strides:
-            layers.append(block(
-                self.in_planes, planes, stride,
-                batch_norm=self.batch_norm, layer_norm=self.layer_norm)
-                )
+
+            layers.append(block(self.in_planes, planes, stride, batch_norm=self.batch_norm, layer_norm=self.layer_norm))
+
             self.in_planes = planes * block.expansion
 
         return nn.Sequential(*layers)
@@ -158,7 +182,8 @@ class ResNet(nn.Module):
 
         out = self.layer4(out)
 
-        out = F.avg_pool2d(out, 4)
+        # out = F.avg_pool2d(out, 4)
+        out = nn.AvgPool2d(4)(out)
 
         out = out.view(out.size(0), -1)
 
