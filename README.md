@@ -10,6 +10,7 @@ and testing, inferences, will be carried out in a modular scheme while the front
 notebook or similar environment. The resnet model is saved under model directory. The full directory
 structure in tree form is given below:
 
+```
 .
 ├── eva7S8_tree
 ├── main.py
@@ -24,7 +25,7 @@ structure in tree form is given below:
     ├── testing.py
     ├── training.py
     └── viz.py
-
+```
 
 ResNet18 architecture in case of CIFAR10 dataset starts with a regular 3 x 3 convolution layer
 since CIFAR10 images are 32 x 32 only. Other applications of ResNets may start with 7 x 7 or 5 x 5 
@@ -40,6 +41,12 @@ The class activation maps is generated using the the gradient-weighted CAM (grad
 computes gradients of the interested class for the previous layer as in back-propagation, and then
 compute the amplified output w.r.t to the corresponding gradient of the respective channels of the
 feature maps.
+
+Finally the grad-CAM generated class activation maps also called the heat-map of the layer is superimposed
+on the original image supplied, and this is carried batchwise thus yielding class-activated images. This
+can be very useful in understanding where the neural network is looking at the input image.
+
+Below is the colab output showing the epochs, and respective loss and accuracy metrics.
 
 
 
