@@ -23,7 +23,7 @@ def test(
             pred = y_pred.argmax(dim=1, keepdim=True) 
             correct += pred.eq(target.view_as(pred)).sum().item()
 
-    test_loss /= len(test_loader.dataset)
+    test_loss /= len(test_loader)
     test_loss = test_loss.item()
     test_acc = 100. * correct / len(test_loader.dataset)
     
