@@ -1,5 +1,4 @@
-### Objective: Generation of Class Activation Maps (CAM) using grad-CAM method,
-### and overlaying of CAMs on top of misclassified CIFAR10 images
+### *`Objective: Generation of Class Activation Maps (CAM) using grad-CAM method, and overlaying of CAMs on top of misclassified CIFAR10 images`*
 
 The ResNet18 architecture is used to train the CIFAR10 dataset. The primary goal is to implement
 the class activation maps (CAM) for understanding the classification achieved in relation to the
@@ -46,7 +45,11 @@ Finally the grad-CAM generated class activation maps also called the heat-map of
 on the original image supplied, and this is carried batchwise thus yielding class-activated images. This
 can be very useful in understanding where the neural network is looking at the input image.
 
-Below is the colab output showing the epochs, and respective loss and accuracy metrics.
+The files in this directory are accessed by Google Colab Notebook run on GPU platform. The results showing logged records of various metrics are hence included in the folder where the relevant notebook is saved. Presently, this notebook can be accessed using the following link: 
+
+`https://github.com/eva7wandb/Eva7_Weights_Heist/blob/main/S8/S8_resnetLayerNorm.ipynb`
+
+
 
 
 
