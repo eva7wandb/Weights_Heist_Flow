@@ -24,8 +24,8 @@ class CIFAR10_dataset():
         self.cuda = cuda
         self.root = root
         
-        self.mean = (0.491, 0.482, 0.447)
-        self.std = (0.247, 0.243, 0.262)
+        self.mean = (0.4890062, 0.47970363, 0.47680542)
+        self.std = (0.264582, 0.258996, 0.25643882)
         
         if normalize:
             self.train_transforms = A.Compose([
@@ -46,7 +46,7 @@ class CIFAR10_dataset():
                 A.Cutout(num_holes=1, max_h_size=8, max_w_size=8, fill_value=0, always_apply=False, p=0.5),
 #                 A.CoarseDropout(
 #                     max_holes=3, max_height=16, max_width=16, min_holes=None, min_height=None, min_width=None, 
-#                     fill_value=(0.491, 0.482, 0.447), mask_fill_value=None, always_apply=False, p=0.25
+#                     fill_value=self.mean, mask_fill_value=None, always_apply=False, p=0.25
 #                 ),
 #                 A.Rotate(limit=5, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, p=0.5),
                 ToTensorV2()
@@ -64,7 +64,7 @@ class CIFAR10_dataset():
                 A.RandomCrop(32, 32, always_apply=False, p=0.5),
                 A.CoarseDropout(
                     max_holes=3, max_height=16, max_width=16, min_holes=None, min_height=None, min_width=None, 
-                    fill_value=(0.491, 0.482, 0.447), mask_fill_value=None, always_apply=False, p=0.25
+                    fill_value=self.mean, mask_fill_value=None, always_apply=False, p=0.25
                 ),
                 A.Rotate(limit=5, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, p=0.5),
                 ToTensorV2()
