@@ -13,12 +13,15 @@ def train(
     
     train_batch_loss = []
     train_batch_acc = []
+    train_batch_lrs = []
     
     correct = 0
     processed = 0
     train_loss = 0
     
     for batch_idx, (data, target) in enumerate(pbar):
+        train_batch_lrs.append(optimizer.param_groups[0]['lr'])
+        
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         y_pred = model(data)
@@ -41,4 +44,4 @@ def train(
         )
         train_batch_acc.append(100*correct/processed)
     
-    return train_batch_loss, train_batch_acc
+    return train_batch_loss, train_batch_acc, train_batch_lrs
