@@ -36,9 +36,9 @@ class CIFAR10_dataset():
                 ),
                 A.Sequential([
                     A.PadIfNeeded(40,40),
-                    A.randomcrop(32,32),
+                    A.RandomCrop(32,32)],
                     p=0.5
-                ]),
+                ),
                 #A.CropAndPad(px=4,keep_size=False, p=0.5,),
                 #A.RandomCrop(32, 32, always_apply=False, p=1),
                 A.HorizontalFlip(p=0.5),
