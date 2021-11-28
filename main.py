@@ -22,7 +22,8 @@ class Trainer:
         scheduler = 'ReduceLROnPlateau',  #values are CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau
         model_viz=True,
         model_path=None,
-        eval_model_on_load=True
+        eval_model_on_load=True,
+        label_smoothing=0.0
     ):
         print(f"[INFO] Loading Data")
         self.train_loader = data.CIFAR10_dataset(
@@ -40,7 +41,7 @@ class Trainer:
             viz.show_model_summary(self.net)
         
         self.lr = lr
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
         self.optimizer = optim.SGD(
             self.net.parameters(), lr=self.lr,
             momentum=0.9, weight_decay=5e-4
