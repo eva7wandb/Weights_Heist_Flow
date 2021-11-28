@@ -79,6 +79,8 @@ class Trainer:
         print(f"[INFO] Begin training for {EPOCHS} epochs.")
         
         for epoch in range(EPOCHS):
+            lr_at_start_of_epoch = self.optimizer.param_groups[0]['lr']
+            
             train_batch_loss, train_batch_acc= train(
                 self.net, device, 
                 self.train_loader, self.optimizer, self.criterion, epoch, self.scheduler,
@@ -98,7 +100,7 @@ class Trainer:
                 "test_acc": test_acc,
                 "train_loss": train_loss,
                 "test_loss": test_loss,
-                "lr": self.optimizer.param_groups[0]['lr'],
+                "lr": lr_at_start_of_epoch,
             }
             try:
                 wandb.log(log_temp)
