@@ -50,7 +50,10 @@ class Trainer:
                 momentum=0.9, weight_decay=1e-4
             )
         elif optimizer=='Adam':
-            self.optimizer = optim.Adam(params, lr=self.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
+            self.optimizer = optim.Adam(
+                self.net.parameters(), lr=self.lr, 
+                betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False
+            )
         else:
             raise ValueError(f'{optimizer} is not valid choice. Please select one of valid scheduler - SGD, Adam')
         
