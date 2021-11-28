@@ -91,7 +91,7 @@ class Trainer:
                 self.net, device,
                 self.test_loader, self.criterion, epoch,
             )
-            self.lr_logs.append(self.optimizer.param_groups[0]['lr'])
+            self.lr_logs.append(lr_at_start_of_epoch)
             #self.scheduler.step(test_loss)
             
             ## logging
