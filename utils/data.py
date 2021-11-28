@@ -34,8 +34,13 @@ class CIFAR10_dataset():
                     std=self.std,
                     always_apply=True
                 ),
-                A.CropAndPad(px=4,keep_size=False, p=0.5,),
-                A.RandomCrop(32, 32, always_apply=False, p=1),
+                A.Sequential([
+                    A.PadIfNeeded(40,40),
+                    A.randomcrop(32,32),
+                    p=0.5
+                ]),
+                #A.CropAndPad(px=4,keep_size=False, p=0.5,),
+                #A.RandomCrop(32, 32, always_apply=False, p=1),
                 A.HorizontalFlip(p=0.5),
                 #A.Cutout (num_holes=8, max_h_size=8, fill_value=(0.491, 0.482, 0.447), always_apply=False, p=0.5),
                 A.Cutout(num_holes=1, max_h_size=8, max_w_size=8, fill_value=0, always_apply=False, p=0.5),
