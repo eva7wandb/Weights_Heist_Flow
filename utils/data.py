@@ -34,7 +34,8 @@ class CIFAR10_dataset():
                     std=self.std,
                     always_apply=True
                 ),
-                A.RandomCrop(32, 32, always_apply=False, p=0.5),
+                A.CropAndPad(px=4,keep_size=False, p=0.5,),
+                A.RandomCrop(32, 32, always_apply=False, p=1),
                 A.HorizontalFlip(p=0.5),
                 A.Cutout (num_holes=8, max_h_size=8, fill_value=(0.491, 0.482, 0.447), always_apply=False, p=0.5),
 #                 A.CoarseDropout(
@@ -85,12 +86,12 @@ class CIFAR10_dataset():
         self.classes = data.classes
         return data
             
-    def get_loader(self):
+    def get_loader(self, batch_size=128):
         data = self.get_data()
 
         dataloader_args = dict(
             shuffle=self.shuffle, 
-            batch_size=128, 
+            batch_size=batch_size, 
             num_workers=2, 
             pin_memory=True
         ) if self.cuda else dict(

@@ -29,6 +29,8 @@ def train(
         
         loss.backward()
         optimizer.step()
+        if lr_scheduler != None:
+          lr_scheduler.step()
         
         pred = y_pred.argmax(dim=1, keepdim=True)
         correct += pred.eq(target.view_as(pred)).sum().item()

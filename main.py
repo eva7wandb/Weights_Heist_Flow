@@ -18,6 +18,8 @@ class Trainer:
     def __init__(
         self, model,
         lr=0.01,
+        batch_size=128,
+        scheduler = 'ReduceLROnPlateau',  #values are CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau
         model_viz=True,
         model_path=None,
         eval_model_on_load=True
@@ -25,13 +27,13 @@ class Trainer:
         print(f"[INFO] Loading Data")
         self.train_loader = data.CIFAR10_dataset(
             train=True, cuda=cuda
-        ).get_loader()
+        ).get_loader(batch_size)
         self.test_loader = data.CIFAR10_dataset(
             train=False, cuda=cuda
-        ).get_loader()
+        ).get_loader(batch_size)
         self.test_loader_unnormalized = data.CIFAR10_dataset(
             train=False, cuda=cuda, normalize=False
-        ).get_loader()
+        ).get_loader(batch_size)
 
         self.net = model.to(device)
         if model_viz:
@@ -43,9 +45,17 @@ class Trainer:
             self.net.parameters(), lr=self.lr,
             momentum=0.9, weight_decay=5e-4
         )
-        # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
-        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min')
+        if scheduler == 'CosineAnnealingLR':
+            self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
+        elif scheduler == 'ReduceLROnPlateau':
+            self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min')
+        elif scheduler == 'OneCycleLR':
+            self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=lr, steps_per_epoch=len(self.train_loader), epochs=24, div_factor=10, final_div_factor=1, pct_start=0.2, three_phase=False, anneal_strategy='linear')
+        else:
+            raise ValueError(f'{scheduler} is not valid choice. Please select one of valid scheduler - CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau')
+
         self.logs = []
+        self.lr_logs = []
         
         self.model_path = model_path
         if self.model_path:
@@ -65,7 +75,7 @@ class Trainer:
         for epoch in range(EPOCHS):
             train_batch_loss, train_batch_acc= train(
                 self.net, device, 
-                self.train_loader, self.optimizer, self.criterion, epoch,
+                self.train_loader, self.optimizer, self.criterion, epoch, self.scheduler,
             )
             train_loss = np.mean(train_batch_loss)
             train_acc = np.mean(train_batch_acc)
@@ -73,7 +83,8 @@ class Trainer:
                 self.net, device,
                 self.test_loader, self.criterion, epoch,
             )
-            self.scheduler.step(test_loss)
+            self.lr_logs.append(self.optimizer.param_groups[0]['lr'])
+            #self.scheduler.step(test_loss)
             
             ## logging
             log_temp = {
