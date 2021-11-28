@@ -38,7 +38,7 @@ class CIFAR10_dataset():
                 #A.RandomCrop(32, 32, always_apply=False, p=1),
                 A.HorizontalFlip(p=0.5),
                 #A.Cutout (num_holes=8, max_h_size=8, fill_value=(0.491, 0.482, 0.447), always_apply=False, p=0.5),
-                A.Cutout(num_holes=1, max_h_size=8, max_w_size=8, fill_value=self.mean, always_apply=False, p=0.5),
+                A.Cutout(num_holes=4, max_h_size=8, max_w_size=8, fill_value=self.mean, always_apply=False, p=0.5),
 #                 A.CoarseDropout(
 #                     max_holes=3, max_height=16, max_width=16, min_holes=None, min_height=None, min_width=None, 
 #                     fill_value=self.mean, mask_fill_value=None, always_apply=False, p=0.25
@@ -106,6 +106,6 @@ class CIFAR10_dataset():
         )
         data_loader = DataLoader(data, **dataloader_args)
         print(
-            f"""[INFO] {'train' if self.train else 'test'} dataset of size {len(data)} loaded... (v3)"""
+            f"""[INFO] {'train' if self.train else 'test'} dataset of size {len(data)} loaded... (v4)"""
         )
         return data_loader
