@@ -51,7 +51,7 @@ class Trainer:
         elif scheduler == 'ReduceLROnPlateau':
             self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min')
         elif scheduler == 'OneCycleLR':
-            self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=lr, steps_per_epoch=len(self.train_loader), epochs=30, div_factor=10, final_div_factor=1, pct_start=0.2, three_phase=False, anneal_strategy='linear')
+            self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=lr, steps_per_epoch=len(self.train_loader), epochs=24, div_factor=10, final_div_factor=1, pct_start=0.2, three_phase=False, anneal_strategy='linear')
         else:
             raise ValueError(f'{scheduler} is not valid choice. Please select one of valid scheduler - CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau')
 
