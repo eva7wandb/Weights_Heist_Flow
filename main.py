@@ -81,7 +81,7 @@ class Trainer:
         for epoch in range(EPOCHS):
             lr_at_start_of_epoch = self.optimizer.param_groups[0]['lr']
             
-            train_batch_loss, train_batch_acc= train(
+            train_batch_loss, train_batch_acc, train_batch_lrs = train(
                 self.net, device, 
                 self.train_loader, self.optimizer, self.criterion, epoch, self.scheduler,
             )
@@ -91,7 +91,7 @@ class Trainer:
                 self.net, device,
                 self.test_loader, self.criterion, epoch,
             )
-            self.lr_logs.append(lr_at_start_of_epoch)
+            self.lr_logs.extend(train_batch_lrs)
             #self.scheduler.step(test_loss)
             
             ## logging
