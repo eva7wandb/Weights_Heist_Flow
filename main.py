@@ -44,7 +44,7 @@ class Trainer:
         self.criterion = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
         self.optimizer = optim.SGD(
             self.net.parameters(), lr=self.lr,
-            momentum=0.9, weight_decay=5e-4
+            momentum=0.9, weight_decay=1e-4
         )
         if scheduler == 'CosineAnnealingLR':
             self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
