@@ -54,7 +54,7 @@ class Trainer:
             self.scheduler = torch.optim.lr_scheduler.OneCycleLR(
                 self.optimizer, max_lr=lr, steps_per_epoch=len(self.train_loader), 
                 epochs=24, div_factor=10, 
-                final_div_factor=2, pct_start=0.2, 
+                final_div_factor=1, pct_start=0.2, 
                 three_phase=False, anneal_strategy='linear'
             )
         else:
