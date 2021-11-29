@@ -9,6 +9,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
 import numpy as np
 
 setup.set_seed()
@@ -179,7 +180,7 @@ class Trainer:
 
             # update the lr for next step and store
             self.lr *= update_step
-            print(f'after update, new model self.lr becomes {self.lr}')
+            print(f'\rafter update, new model self.lr becomes {self.lr}')
             
             self.optimizer.param_groups[0]["lr"] = self.lr
             print(f'\rConfirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
