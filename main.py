@@ -5,6 +5,7 @@ from torch_lr_finder import LRFinder
 from utils.training import train
 from utils.testing import test
 
+import math
 import torch
 import torch.nn as nn
 import torch.optim as optim
