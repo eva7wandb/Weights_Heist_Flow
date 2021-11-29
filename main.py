@@ -146,7 +146,7 @@ class Trainer:
         self.lr = init_value
         print(f'after setting int_value, model self.lr is {self.lr}')
         self.optimizer.param_groups[0]["lr"] = self.lr
-        print(f'Confirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
+        print(f'\rConfirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
         best_loss = 0.0
         batch_num = 0
         losses = []
@@ -180,7 +180,7 @@ class Trainer:
             print(f'after update, new model self.lr becomes {self.lr}')
             
             self.optimizer.param_groups[0]["lr"] = self.lr
-            print(f'Confirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
+            print(f'\rConfirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
         return log_lrs[10:-5], losses[10:-5]
 
 
