@@ -1,6 +1,7 @@
 from utils import (
     setup, data, viz
 )
+from torch_lr_finder import LRFinder
 from utils.training import train
 from utils.testing import test
 
@@ -24,7 +25,8 @@ class Trainer:
         model_path=None,
         eval_model_on_load=True,
         label_smoothing=0.0,
-        optimizer='SGD'
+        optimizer='SGD',
+        run_find_lr=False
     ):
         print(f"[INFO] Loading Data")
         self.train_loader = data.CIFAR10_dataset(
@@ -58,6 +60,10 @@ class Trainer:
             raise ValueError(f'{optimizer} is not valid choice. Please select one of valid scheduler - SGD, Adam')
         
         print(self.optimizer)
+        print('-' * 64)
+        if run_find_lr:
+            self.find_lr()
+        print('-' * 64)
         
         if scheduler == 'CosineAnnealingLR':
             self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
@@ -127,6 +133,12 @@ class Trainer:
             self.net, device,
             self.test_loader, self.criterion, epoch=0,
         )
+    
+    def find_lr(self):
+        lr_finder = LRFinder(self.net, self.optimizer, self.criterion, device=device)
+        lr_finder.range_test(self.train_loader, end_lr=1, num_iter=200, step_mode="exp")
+        lr_finder.plot()
+        lr_finder.reset()
 
 
 def show_misclassification(trainer, cam_layer_name='layer4'):
