@@ -137,8 +137,19 @@ class Trainer:
     
     def find_lr(self):
         lr_finder = LRFinder(self.net, self.optimizer, self.criterion, device=device)
-        lr_finder.range_test(self.train_loader, end_lr=1, num_iter=200, step_mode="exp")
+        lr_finder.range_test(self.train_loader, end_lr=1, num_iter=100, step_mode="exp")
         lr_finder.plot()
+        best_loss_ind = lr_finder.history['loss'].index(lr_finder.best_loss)
+        print('few steps before and after best_loss')
+        print('(relative step, lr, loss)')
+        print(*[
+            (n - 5, round(lr, 5), round(loss, 5))
+            for n, (lr, loss) in enumerate(zip(
+                lr_finder.history['lr'][best_loss_ind - 5 : best_loss_ind + 5], 
+                lr_finder.history['loss'][best_loss_ind - 5 : best_loss_ind + 5], 
+            ))
+        ], sep='\n')
+        self.lr_history = lr_finder.history
         lr_finder.reset()
 
 
