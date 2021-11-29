@@ -29,11 +29,6 @@ class CIFAR10_dataset():
         
         if normalize:
             self.train_transforms = A.Compose([
-                A.Normalize(
-                    mean=self.mean, 
-                    std=self.std,
-                    always_apply=True
-                ),
                 A.Sequential([
                     A.PadIfNeeded(40,40),
                     A.RandomCrop(32,32)],
@@ -49,6 +44,11 @@ class CIFAR10_dataset():
 #                     fill_value=self.mean, mask_fill_value=None, always_apply=False, p=0.25
 #                 ),
 #                 A.Rotate(limit=5, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, p=0.5),
+                A.Normalize(
+                    mean=self.mean, 
+                    std=self.std,
+                    always_apply=True
+                ),
                 ToTensorV2()
             ])
             self.test_transforms = A.Compose([
@@ -98,7 +98,7 @@ class CIFAR10_dataset():
         dataloader_args = dict(
             shuffle=self.shuffle, 
             batch_size=batch_size, 
-            num_workers=2, 
+            num_workers=3, 
             pin_memory=True
         ) if self.cuda else dict(
             shuffle=self.shuffle, 
@@ -106,6 +106,6 @@ class CIFAR10_dataset():
         )
         data_loader = DataLoader(data, **dataloader_args)
         print(
-            f"""[INFO] {'train' if self.train else 'test'} dataset of size {len(data)} loaded... (v4.1)"""
+            f"""[INFO] {'train' if self.train else 'test'} dataset of size {len(data)} loaded... (v4.2)"""
         )
         return data_loader
