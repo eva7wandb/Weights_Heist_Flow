@@ -181,6 +181,7 @@ class Trainer:
             
             self.optimizer.param_groups[0]["lr"] = self.lr
             print(f'\rConfirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
+        losses = [x.item() for x in losses]
         return log_lrs[10:-5], losses[10:-5]
 
 
