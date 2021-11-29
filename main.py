@@ -179,7 +179,7 @@ class Trainer:
             print(f'after update, new model self.lr becomes {self.lr}')
             
             self.optimizer.param_groups[0]["lr"] = self.lr
-            print(f'Confirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}']
+            print(f'Confirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
         return log_lrs[10:-5], losses[10:-5]
 
 
