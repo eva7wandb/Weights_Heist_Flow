@@ -141,7 +141,7 @@ class Trainer:
         number_in_epoch = len(self.train_loader) - 1
         print(f'number_in_epoch is {number_in_epoch}')
         update_step = (final_value / init_value) ** (1 / number_in_epoch)
-        print(f'update_step is {update_step})
+        print(f'update_step is {update_step}')
         self.lr = init_value
         print(f'after setting int_value, model self.lr is {self.lr}')
         self.optimizer.param_groups[0]["lr"] = self.lr
