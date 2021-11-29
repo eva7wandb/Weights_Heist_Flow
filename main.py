@@ -163,7 +163,8 @@ class Trainer:
 
             # exit if loss shoots up
             if batch_num > 1 and loss > 4 * best_loss:
-                return log_lrs[10:-5], losses[10:-5]
+                break
+                # return log_lrs[10:-5], losses[10:-5]
 
             # Record the best loss
             if loss < best_loss or batch_num == 1:
