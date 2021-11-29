@@ -62,6 +62,7 @@ class Trainer:
         print(self.optimizer)
         print('-' * 64)
         if run_find_lr:
+            print('Running LR finder ... ')
             self.find_lr()
         print('-' * 64)
         
