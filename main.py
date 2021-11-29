@@ -151,6 +151,7 @@ class Trainer:
         batch_num = 0
         losses = []
         log_lrs = []
+        lrs = []
         for data in self.train_loader:
             batch_num += 1
             inputs, labels = data
@@ -169,6 +170,7 @@ class Trainer:
 
             # Store the values
             losses.append(loss)
+            lrs.append(self.lr)
             log_lrs.append(math.log10(self.lr))
 
             # Do the backward pass and optimize
@@ -182,6 +184,22 @@ class Trainer:
             self.optimizer.param_groups[0]["lr"] = self.lr
             print(f'\rConfirming that the self.lr passes onto optimizer.param_groups: {self.optimizer.param_groups[0]["lr"]}')
         losses = [x.item() for x in losses]
+
+        plt.plot(lrs, losses)
+        plt.xlabel('LR')
+        plt.ylabel('Losses')
+        plt.xscale('log', basex=10)
+        plt.grid()
+
+        low_loss_ind = losses.index(min(losses))
+        lr_at_low_loss = lrs[low_loss_ind]
+
+        print(
+            f'''
+            Lowest Loss Value -- {min(losses)}
+            LR at lowest Loss -- {lr_at_low_loss} 
+            Index of Lowest Loss -- {low_loss_ind}'''
+        )
         return log_lrs[10:-5], losses[10:-5]
 
 
