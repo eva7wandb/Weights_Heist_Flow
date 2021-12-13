@@ -26,18 +26,19 @@ class Trainer:
         eval_model_on_load=True,
         label_smoothing=0.0,
         optimizer='SGD',
-        run_find_lr=False
+        run_find_lr=False,
+        epochs = 24
     ):
         print(f"[INFO] Loading Data")
-        self.train_loader = data.CIFAR10_dataset(
-            train=True, cuda=cuda
-        ).get_loader(batch_size)
-        self.test_loader = data.CIFAR10_dataset(
-            train=False, cuda=cuda
-        ).get_loader(batch_size)
-        self.test_loader_unnormalized = data.CIFAR10_dataset(
-            train=False, cuda=cuda, normalize=False
-        ).get_loader(batch_size)
+        self.train_loader = data.TinyImagenet200_dataset(
+            train=True, cuda=cuda, batch_size_cuda=batch_size, num_workers=2
+        ).get_loader()
+        self.test_loader = data.TinyImagenet200_dataset(
+            train=False, cuda=cuda, batch_size_cuda=batch_size, num_workers=2
+        ).get_loader()
+        # self.test_loader_unnormalized = data.TinyImagenet200_dataset(
+        #     train=False, cuda=cuda, normalize=False, batch_size_cuda=batch_size, num_workers=2
+        # ).get_loader()
 
         self.net = model.to(device)
         if model_viz:
@@ -77,6 +78,10 @@ class Trainer:
                 final_div_factor=1, pct_start=0.2, 
                 three_phase=False, anneal_strategy='linear'
             )
+        elif scheduler == 'RegularOCLR':
+            self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=lr, steps_per_epoch=len(self.train_loader),
+                       epochs=epochs, div_factor=10, final_div_factor=10,
+                       pct_start=10/epochs)
         else:
             raise ValueError(f'{scheduler} is not valid choice. Please select one of valid scheduler - CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau')
 
