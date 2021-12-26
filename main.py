@@ -27,19 +27,9 @@ class Trainer:
         label_smoothing=0.0,
         optimizer='SGD',
         run_find_lr=False,
-        epochs = 24
+        dataset='CIFAR10',
     ):
-        print(f"[INFO] Loading Data")
-        self.train_loader = data.TinyImagenet200_dataset(
-            train=True, cuda=cuda, batch_size_cuda=batch_size, num_workers=2
-        ).get_loader()
-        self.test_loader = data.TinyImagenet200_dataset(
-            train=False, cuda=cuda, batch_size_cuda=batch_size, num_workers=2
-        ).get_loader()
-        # self.test_loader_unnormalized = data.TinyImagenet200_dataset(
-        #     train=False, cuda=cuda, normalize=False, batch_size_cuda=batch_size, num_workers=2
-        # ).get_loader()
-
+        self.load_data(dataset, batch_size)
         self.net = model.to(device)
         if model_viz:
             viz.show_model_summary(self.net)
@@ -78,10 +68,8 @@ class Trainer:
                 final_div_factor=1, pct_start=0.2, 
                 three_phase=False, anneal_strategy='linear'
             )
-        elif scheduler == 'RegularOCLR':
-            self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=lr, steps_per_epoch=len(self.train_loader),
-                       epochs=epochs, div_factor=10, final_div_factor=10,
-                       pct_start=10/epochs)
+        elif isinstance(scheduler, type(None)):
+            self.scheduler = None
         else:
             raise ValueError(f'{scheduler} is not valid choice. Please select one of valid scheduler - CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau')
 
@@ -94,6 +82,28 @@ class Trainer:
         
         if eval_model_on_load:
             self.evaluate_model()
+            
+            
+    def load_data(self, dataset, batch_size):
+        print(f"[INFO] Loading Dataset -- {dataset}")
+        if dataset=='CIFAR10':
+            self.train_loader = data.CIFAR10_dataset(
+                train=True, cuda=cuda
+            ).get_loader(batch_size)
+            self.test_loader = data.CIFAR10_dataset(
+                train=False, cuda=cuda
+            ).get_loader(batch_size)
+            self.test_loader_unnormalized = data.CIFAR10_dataset(
+                train=False, cuda=cuda, normalize=False
+            ).get_loader(batch_size)
+        elif dataset=='TinyImagenet200':
+            self.train_loader = data.TinyImagenet200_dataset(
+                train=True, cuda=cuda, batch_size_cuda=batch_size, num_workers=2
+            ).get_loader()
+            self.test_loader = data.TinyImagenet200_dataset(
+                train=False, cuda=cuda, batch_size_cuda=batch_size, num_workers=2
+            ).get_loader()
+
     
     def load_model(self):
         print("[INFO] Loading model to from path {}".format(self.model_path))
