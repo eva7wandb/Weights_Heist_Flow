@@ -75,6 +75,7 @@ class Trainer:
 
         self.logs = []
         self.lr_logs = []
+        self.stn_visuals = []
         
         self.model_path = model_path
         if self.model_path:
@@ -109,7 +110,7 @@ class Trainer:
         print("[INFO] Loading model to from path {}".format(self.model_path))
         self.net.load_state_dict(torch.load(self.model_path))
         
-    def train_model(self, epochs, wandb=None):
+    def train_model(self, epochs, wandb=None, log_stn_visuals=False):
         EPOCHS = epochs
         print(f"[INFO] Begin training for {EPOCHS} epochs.")
         
@@ -137,6 +138,10 @@ class Trainer:
                 "test_loss": test_loss,
                 "lr": lr_at_start_of_epoch,
             }
+            if log_stn_visuals:
+                _, out_grid = viz.get_stn_visuals(self.test_loader, self.net, device)
+                self.stn_visuals.append(out_grid)
+                
             try:
                 wandb.log(log_temp)
             except:
