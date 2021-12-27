@@ -3,6 +3,9 @@ from torchcam.methods import SmoothGradCAMpp
 from torchcam.utils import overlay_mask
 from torchsummary import summary
 import matplotlib.pyplot as plt
+import numpy as np
+import torchvision
+import torch
 
 
 def show_model_summary(model, input_size=(3, 32, 32)):
@@ -57,6 +60,7 @@ def visualize_sample(trainer, sample, cam_layer_name='layer4'):
     plt.xticks(range(10), [x.upper() for x in class_names], rotation=90)
     plt.title('score')
 
+    
 def visualize_loss(logs):
     loss_train = [x['train_loss'] for x in logs]
     loss_val = [x['test_loss'] for x in logs]
@@ -68,3 +72,46 @@ def visualize_loss(logs):
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
+    
+    
+def convert_image_np(inp, normalize=True, numpy=True):
+    """Convert a Tensor to numpy image."""
+    if numpy:
+        inp = inp.numpy().transpose((1, 2, 0))
+    else:
+        inp = inp.transpose((1, 2, 0))
+    
+    if normalize:
+        mean = np.array([0.4890062, 0.47970363, 0.47680542])
+        std = np.array([0.264582, 0.258996, 0.25643882])
+        inp = std * inp + mean
+    inp = np.clip(inp, 0, 1)
+    return inp
+
+
+def get_stn_visuals(test_loader, model, device):
+    with torch.no_grad():
+        # Get a batch of training data
+        data = next(iter(test_loader))[0].to(device)
+
+        input_tensor = data.cpu()
+        transformed_input_tensor = model.stn(data).cpu()
+
+        in_grid = convert_image_np(
+            torchvision.utils.make_grid(input_tensor))
+
+        out_grid = convert_image_np(
+            torchvision.utils.make_grid(transformed_input_tensor))
+    return in_grid, out_grid
+
+
+def visualize_stn(test_loader, model, device):
+    in_grid, out_grid = get_stn_visuals(test_loader, model, device)
+    
+    # Plot the results side-by-side
+    f, axarr = plt.subplots(1, 2, figsize=(15,15))
+    axarr[0].imshow(in_grid)
+    axarr[0].set_title('Dataset Images')
+
+    axarr[1].imshow(out_grid)
+    axarr[1].set_title('Transformed Images')
